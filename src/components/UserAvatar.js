@@ -1,6 +1,6 @@
-import { auth } from "../auth"
+import { auth } from "../../auth"
 import Image from "next/image"
-import { SignOut } from "./signout-button"
+import SigninButton from "./SigninButton"
  
 export default async function UserAvatar() {
   const session = await auth()
@@ -11,9 +11,9 @@ export default async function UserAvatar() {
     <div>
       <Image src={session.user.image} width="300" height="300" />
       <p>{session.user.name}</p>
-      <p>{session.user.email  }</p>
-      <p>{session.user.id}</p>
-      <SignOut/>
+      <p>{session.user.id  }</p>
+      <p>{session.user.email}</p>
+      <SigninButton/>
     </div>
   )
 }

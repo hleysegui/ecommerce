@@ -1,22 +1,21 @@
 import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github"
 import Credentials from "next-auth/providers/credentials"
-import getUserFromApi from "@/app/api/hello/page"
+import { use } from "react"
+import { headers } from "next/headers"
 
- 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     secret: process.env.AUTH_SECRET,
-    /* pages: {
-        signIn: '/login'
-    } */
+    debug: process.env.NODE_ENV === 'development',
+    pages: {
+        signIn: '/signIn'    
+    },
     providers: [
-    /*GitHub({
+    GitHub({
         clientId: process.env.GITHUB_ID,
         clientSecret: process.env.GITHUB_SECRET
-    }), */
+    }), 
     Credentials({
-        //id: "credentials",
-        //name: "Dermable",
         credentials: {
             username: {},
             password: {},
@@ -36,7 +35,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 },
             });
 
-            const user = await res.json()
+            const data = await res.json()
+
+            const user = data.data
+
             if(!res.ok) {
                 throw new Error(user.message)
             }
@@ -45,14 +47,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 return user
             }
 
-            return null
+            return null 
             
         }
     })
 ],
     callbacks: {
-        async jwt({ token, user, account }) {
+        async jwt({ token, user, account, profile }) {
         if (account && user) {
+            console.log(user)
             return {
             ...token,
             accessToken: user.token,
@@ -60,14 +63,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             };
         }
 
-        return token;
+        return token; 
         },
 
-        async session({ session, token }) {
-        session.user.accessToken = token.accessToken;
+       async session({ session, token, user }) {
+        if(session?.user) {
+            session.user.accessToken = token.accessToken;
+        }
             
         return session;
-        },
+        }, 
     },
-
 })
