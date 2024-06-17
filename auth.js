@@ -36,8 +36,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             });
 
             const data = await res.json()
+            console.log('data', data)
 
-            const user = data.data
+            //const user = data.data
+
+            const user = {
+                id: data.data.id, 
+                email: data.data.email, 
+                token: data.data.token, 
+                nicename: data.data.nicename,
+                displayName: data.data.displayName,
+                firstName: data.data.firstName,
+                lastName: data.data.lastName
+            }
+
+            //console.log('autorize', user)
 
             if(!res.ok) {
                 throw new Error(user.message)
@@ -53,23 +66,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     })
 ],
     callbacks: {
+        async signIn({user}) {
+            if(user.id) {
+                return true
+            }
+            return false
+        },
         async jwt({ token, user, account, profile }) {
+
         if (account && user) {
             return {
             ...token,
             accessToken: user.token,
             refreshToken: user.refreshToken,
+            id: user.id,
+            displayName: user.displayName
             };
         }
 
         return token; 
         },
 
-       async session({ session, token }) {
+       async session({ session, token, user }) {
+
         if(session?.user) {
             session.user.accessToken = token.accessToken;
+            session.user.id = token.id
+            session.user.displayName = token.displayName
         }
-        //session.user.userId = user.userId
             
         return session;
         }, 
