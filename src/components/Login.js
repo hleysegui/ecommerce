@@ -13,13 +13,10 @@ const Login = (props) => {
 
     const onSubmit = async (e) => {
         e.preventDefault()
-
-        console.log(userName)
-        console.log(pass)
-
+        
        const res = await signIn("credentials", {
-            username: "ashlub",
-            password: "azerty123456!",
+            username: userName.current.value,
+            password: pass.current.value,
             redirect: true,
             callbackUrl: props.callbackUrl ?? "http://localhost:3000"
         }) 
@@ -30,7 +27,7 @@ const Login = (props) => {
             <div>
                 Login form 
             </div>
-            <form onClick={onSubmit} >
+            <form onSubmit={onSubmit} >
                     <label>
                         Username
                         <input name="username" ref={userName}  type="text" />
