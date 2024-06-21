@@ -1,14 +1,22 @@
 "use server"
+import { isEmpty } from 'lodash';
 
-import { cookies } from "next/headers"
+export const storeSession = ( session ) => {
+	
+	if ( isEmpty( session ) ) {
+		return null;
+	}
 
-export default async function crsfToken () {
+	if(typeof window !== 'undefined') {
+		localStorage.setItem( 'x-wc-session', session );
+	}
+	
+	
+}
 
-        const res = await cookies()
-        console.log(res)
-        const csrfTokenValue = res.get('authjs.csrf-token').value
-        //const csrfToken = csrfTokenValue.replace(/[|]/g , "%")
-        const csrfToken = csrfTokenValue.split(/[|]/g)[0]
-
-        return csrfToken
+export const getSession = () => {
+	if(typeof window !== 'undefined') {
+		return localStorage.getItem( 'x-wc-session' );
+	}
+	
 }
